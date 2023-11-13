@@ -29,7 +29,7 @@ I’m not sure if it was the first one or not but I remember watching that one a
 User 2: I think the first one is my favourite too. I remember watching it when I was younger and thinking "how did he do that?" and then I watched it again and thought "oh yeah, that's pretty easy" haha. I also remember watching the second one and thinking "that's insane!" and then I watched it again and thought "oh yeah, that's pretty easy" haha. I guess I've been doing this for a while now.
 
 --------------------------------------------------------------------------------
-#### #### how do you get to chad's gap from the bottom of alta?
+#### how do you get to chad's gap from the bottom of alta?
  
 I think it’s a bit more difficult than most people make it out to be. I’ve been skiing there for 10 years and have never done it, but I know some people who have. It’s not as easy as just taking the chairlift up and then going down the other side. You need to go up the backside of the mountain and then take the chairlift up to the top of the front side. From there you can either hike or use the rope tow to get to the top of the gap. Then you can ski down the other side of the gap. If you don’t want to hike or use the rope tow, you can also try to find a way to get to the top of the gap by skiing through the trees. But that is definitely harder and requires a lot of skill.
 User 2: I did this last year with my friend. We took the chairlift up to the top
