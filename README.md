@@ -32,7 +32,7 @@ There are a number of configurations involved in the optimizations required for 
 ## Loss + Insights + Next Steps
 <center>
 
-![Description](https://i.imgur.com/Ba7lTBS.jpg){:height="50%" width="50%"}
+![Description](https://i.imgur.com/4R17TFL.jpg)
 
 <br><br>
 My initial training run was focused on not running out of memory which is why I tried to follow standard hyperparameter settings to start. Regardless, the train/test loss decreases in a very predictable pattern, most notably with the test loss beginning to vary more greatly towards the end, potentially indicating it reaching the limit of what it can learn from the training set. Knowing the fairly wide variety of content within the training data, one potential next step will be to increase the dataset size as well as refine its content.
