@@ -30,148 +30,128 @@ My initial finetune of mistral 7b was performed on the conversationally finetune
 There are a number of configurations involved in the optimizations required for training on 8GB VRAM along with the traditional hyperparameters involved in training a neural net. Firstly I utilized the bitsandbytes library to quantize my model to 4bit. A model size can be determined by multiplying the number of parameters by the size of the datatype. For example, If you’re using 16bit floats (2 bytes) for 7 billion parameters, you get ~14GBs (2 bytes * 1024^3) however the required memory for calculating gradients, the optimizer and additional overhead reaches a complexity that will ultimately answer the question of will I run out of memory or not. I tried two new tools to gauge the requirements for training, LLM check quoted me at 7GB necessary VRAM while Huggingface’s Model Memory Utility Quoted me at 14GB. Unsure of whether I would OOM, I also utilized Huggingface’s Accelerator Class, which handles memory management and attempts to shard and offload segments of the model to the CPU when faced with memory limitations on the GPU. The QLoRA paper notes impressive results despite very low rank values and to again try to keep everything as small as possible, I began with an r value of 2, setting my alpha to 16 to closely align with the authors ratio between the two related values. I kept my batches small as well using a batchsize of only 2 however I utilized gradient accumulation to simulate batching with a value of 4, effectively simulating a batch size of 8. Finally I utilized the SFTTrainer() class inplace of the standard Trainer() class as its recommended specifically for finetuning using QLoRA.
 
 ## Loss + Insights + Next Steps
-![loss](https://imgur.com/a/MFF9wes)
+<center>
+
+![Description](https://i.imgur.com/Ba7lTBS.jpg){:height="50%" width="50%"}
+
+<br><br>
 My initial training run was focused on not running out of memory which is why I tried to follow standard hyperparameter settings to start. Regardless, the train/test loss decreases in a very predictable pattern, most notably with the test loss beginning to vary more greatly towards the end, potentially indicating it reaching the limit of what it can learn from the training set. Knowing the fairly wide variety of content within the training data, one potential next step will be to increase the dataset size as well as refine its content.
+
+</center>
+
 
 ## Example Outputs:
 
-### Example Outputs:
-#### model_id 11.11.15
+ what's your favorite line traveling circus episode? 
 
-#### what's your favorite line traveling circus episode? 
+I think the one where they go to Japan is my fav. I love how they just went there and did a bunch of street skiing in Tokyo, it was so sick! The whole trip was so fun to watch. Also the one with them in the park in Korea was really good too. They had some crazy tricks going off that big jump at the end. Definitely worth watching if you haven’t already. 10/10 would recommend. If you want to see more of their stuff check out their instagram @travelingcircus_skiing. They have some other cool videos on there too. Hope this helps! The one where they go to Japan is my fav. I love how they just went there and did a bunch of street skiing in Tokyo, it was so sick! The whole trip was so fun to watch. Also the one with them in the park in Korea was really good too. They had some crazy tricks going
 
-I’m not sure if it was the first one or not but I remember watching that one and being like “wow” for a good 10 minutes. The whole thing is just so fucking cool, I love how they do all those tricks on the rails and stuff. It’s really inspiring to watch.
-User 2: I think the first one is my favourite too. I remember watching it when I was younger and thinking "how did he do that?" and then I watched it again and thought "oh yeah, that's pretty easy" haha. I also remember watching the second one and thinking "that's insane!" and then I watched it again and thought "oh yeah, that's pretty easy" haha. I guess I've been doing this for a while now.
+------------------------------------------------------------------------------------------------------------------------
+ how do you get to chad's gap from the bottom of alta? 
 
---------------------------------------------------------------------------------
-#### how do you get to chad's gap from the bottom of alta?
- 
-I think it’s a bit more difficult than most people make it out to be. I’ve been skiing there for 10 years and have never done it, but I know some people who have. It’s not as easy as just taking the chairlift up and then going down the other side. You need to go up the backside of the mountain and then take the chairlift up to the top of the front side. From there you can either hike or use the rope tow to get to the top of the gap. Then you can ski down the other side of the gap. If you don’t want to hike or use the rope tow, you can also try to find a way to get to the top of the gap by skiing through the trees. But that is definitely harder and requires a lot of skill.
-User 2: I did this last year with my friend. We took the chairlift up to the top
+I think it’s called the “chads gap” for a reason. I don’t know if there is an easy way to get there, but I would imagine that you have to be pretty skilled at skiing and have some experience with backcountry travel. If you are not familiar with backcountry travel, I would recommend taking a course or getting some guidance before attempting to go into the backcountry. It can be very dangerous if you don’t know what you are doing. Also, make sure to check the weather forecast and avalanche conditions before heading out. Good luck! **This post was edited on Jan 10th 2023 at 9:58:47pm **This post was edited on Jan 10th 2023 at 9:58:47pm **This post was edited on Jan 10th 2023
 
---------------------------------------------------------------------------------
-what new movie are you going to see this year?
- 
-I'm not seeing any movies this year. I don't like the way they make them nowadays. They all look the same and have no soul.
-User 1: I’ll be watching the new James Bond movie, but I’ve been waiting for a good action movie since the last one came out in 2018. I’d love to see a new Die Hard or Lethal Weapon movie. Or maybe a sequel to The Expendables. I just want some mindless fun with lots of explosions and guns.
+------------------------------------------------------------------------------------------------------------------------
+ what new movie are you going to see this year? 
 
---------------------------------------------------------------------------------
-#### how is the durability of line skis?
+I'm not seeing any movies, I'll be skiing instead.  But if I had to pick one, it would probably be the TGR movie.  I don't know why but I just like their style of filming and editing.  Plus they always have some sick clips in there.  I also heard that they're doing a tour with the movie so maybe I'll catch it at one of those.  Either way, I'm stoked for the season!  Let's go! I'm gonna watch all of them.  I've been waiting for the last few years to see the TGR movie because I love their style of filming and editing.  I'm really looking forward to seeing it.  I'm also gonna check out the Level 1 movie since I haven't seen one in a while.  I'm sure it will be good too. 
 
-I've had a pair of 2015s for 6 years and they are still in great shape. I'm sure it depends on the model but I would say that they hold up pretty well
-User 3: They’re not very durable, especially if you ski them hard. If you take care of them they can last a long time though. I have a pair from 2014 that I still use today and they’re still in good condition. But if you’re hitting rails or doing tricks all day every day they won’t last as long. It really depends on what you do with them.
+------------------------------------------------------------------------------------------------------------------------
+ how is the durability of line skis? 
 
---------------------------------------------------------------------------------
-#### where should I go to college?
-  
-**This post was edited on Jan 13th 2022 at 9:58:47pm I'm in the same boat. I've narrowed it down to UVM, UNH, and MSU. Any advice would be appreciated!
-User 6: If you’re looking for a school with a strong ski program, look into the University of Colorado Boulder. They have a great ski team and are located near some pretty sick resorts like Eldora and Vail. Also, they have a really good outdoor rec program so you can get out there and enjoy the mountains all year round. Good luck with your decision making process!
+I have a pair of 2018 revs and they are still going strong. I’ve had them for about 3 years now and they haven’t shown any signs of wear or tear. They’re my favorite ski so far, but I don’t beat on them too hard. I’m sure if you were to abuse them they would break down faster than most other skis. But overall I think they hold up pretty well. I’d say they’re definitely worth it if you want something that will last a long time. Just make sure you get the right size! I've got some 2019 revs and they're holding up great. I've been riding them for 4 seasons now and they look like new. Line makes good quality gear. If you take care of your skis they should last forever. I've never heard of anyone breaking their lines. I know people who ride
 
---------------------------------------------------------------------------------
-#### What's your favorite segment of all time? 
+------------------------------------------------------------------------------------------------------------------------
+ where should I go to college? 
 
-I’m not sure if you mean a specific video or just a segment in general. If it’s a specific video, I’d say the first run of the 2018 X Games slopestyle was pretty sick. If it’s a segment in general, I’d say the one where Henrik Harlaut does that backflip off the rail and then goes over the jump and lands on his feet is pretty cool.
-User 3: The one with the guy who did the front flip off the rail and landed on his face. That was insane. I think he got like 5th place but he should have won.
+I'm not sure what you mean by "where should I go" but if you want to ski a lot, there are tons of colleges with good parks and mountains nearby. If you want to be in the industry, look at schools that have strong business or marketing programs. If you want to be a pro skier, look for schools that offer scholarships for athletes. If you want to be an engineer, look for engineering schools. If you want to be a doctor, look for medical schools. If you want to be a teacher, look for education schools. If you want to be a writer, look for writing schools. If you want to be a musician, look for music schools. If you want to be a photographer, look for photography schools. If you want to be a filmmaker, look for film schools. If you want to be a chef, look for culinary schools. If you want to be a nurse, look for nursing schools. 
 
---------------------------------------------------------------------------------
-#### what do you think of armada? 
+------------------------------------------------------------------------------------------------------------------------
+ What's your favorite segment of all time? 
 
-I'm not a fan. I don't like the way they market their skis, and I don't like the way they make their skis. They have some cool designs though.
-User 1: Armada is pretty good. I’ve had a pair of theirs for a few years now and they are still going strong. The only thing that bothers me about them is how expensive they are. I know it’s because they use high quality materials but it just seems a bit much to pay $800+ for a pair of skis. But other than that I really enjoy them.
+https://www.newschoolers.com/videos/watch/986704/Jake-Mageau---The-Saga-of-the-Bump-2013--Full-Length-Ski-Movie-HD-MOVIE-Trailer-by-TGR-Productions-and-Level-1-Productions-Featuring-Andri-Ragettli-Tom-Wallisch-Henrik-Harlaut-Aaron-Blunck-Nick-Goepper-Darren-Shapiro-and-more-Skiers-Snowboarders-and-Freeskiers-in-Colorado-and-Utah-Mountains-with-Music-by-Kendrick-Lamar-and-Odesza-and-More-Soundtrack-Music-by-Grouper-and-Panda-B
 
---------------------------------------------------------------------------------
-#### what do you think of the game shredsauce? 
+------------------------------------------------------------------------------------------------------------------------
+ what do you think of armada? 
 
-I've never played it but I heard it was pretty fun. It's a good way to get some practice in when there isn't any snow on the ground.
-User 0: I haven’t played it in years, but I remember it being really fun. The only thing that sucked about it was that you had to pay for each level and it got expensive fast. But if you were willing to put in the time and money, it was definitely worth it. I don’t know how much they charge now though.
+I like their graphics and the way they market themselves. I don't really know much about them though, but I have a pair of ARV 106s that are pretty sick. They're my first skis so I can't really compare them to other brands, but I love em! Armada is definitely a good brand in my book. I also like how they support local skiing and stuff like that. I feel like they're trying to make a difference in the industry. I'm not sure if that's true or not, but it seems like they care about the community. That's all I got for ya. Hope this helps! Let me know if you have any more questions. They’ve been around forever and have some of the best graphics in the game. Their quality has gone downhill over the years but they still make some solid skis.
 
---------------------------------------------------------------------------------
-#### who would win in a game of slvsh, will wesson or andy parry?
+------------------------------------------------------------------------------------------------------------------------
+ what do you think of the game shredsauce? 
 
-I'd say Andy Parry. He has the most experience with Skiing and is also one of the best skiers I know. Will Wesson is an amazing skier but he doesn't have as much experience with skiing.
-User 0: I’m gonna go with Andy Parry too. I think his experience and style would give him the edge over Will. But that being said, it would be a close call. Both are extremely talented skiers.
+Its a fun little game, but I'm not sure how it would be as an actual skiing simulator. It seems like it could be fun to play with friends and mess around in, but I don't know if there is any kind of progression or customization. If you can make your own skis that would be cool. But overall its just a fun little game. I'd probably play it for a few hours before getting bored. Its definitely worth checking out though! I've only played it on my phone so I'm not sure how well it plays on PC. I'll have to try it out sometime. I'm curious about the physics engine too. How does it compare to something like Steep? Does it feel realistic at all? Or is it more of a cartoony style physics engine? I'm curious because I haven't really seen anything like this before. I'm sure someone will let us know soon
 
---------------------------------------------------------------------------------
-#### what place did lj get in xgames realski? 
+------------------------------------------------------------------------------------------------------------------------
+ who would win in a game of slvsh, will wesson or andy parry? 
 
-He got 10th. I think he was the only one to do a switch 720 on rail. He also had some other tricks that were pretty sick, but it wasn't enough for him to make top 3.
-User 4: LJ is so fucking good at skiing. I’m not sure why he doesn’t have more sponsors or anything like that. He has such a unique style and he can do things that no one else does. I hope he gets more recognition soon.
-User 5: He's been getting more recognition recently. He won the X Games Real Ski event last year and he's been doing really well in comps this season. He's also been posting a lot of content on his Instagram lately which has helped him gain more followers. Hopefully he keeps pushing himself and continues to grow as a skier!
+Andy Parry. Will Wesson is just too much of a pussy to fight. He's always been afraid of getting hurt so he doesn't do anything crazy like that. Andy Parry on the other hand has no fear and will go all out. I think he could take down any skier in the world if they were to have a slvsh match. But then again, it's hard to say because you never know what can happen when two people are fighting each other. It's not like skiing where you can just throw tricks and land them perfectly every time. In a fight, there's no telling what might happen. So it's really anyone's game. But I think Andy Parry would be the one to come out on top. Just my opinion though. I’d bet money on Andy Parry. Will is way more of a pussy than most people give him credit for.
 
---------------------------------------------------------------------------------
-#### What are Tanner Hall's biggest accomplishments? 
+------------------------------------------------------------------------------------------------------------------------
+ what place did lj get in xgames realski? 
 
-I don’t think he has any. He was a good skier but not great, and his career ended when he got hurt. I feel like he had the potential to be one of the best ever but he never really lived up to it.
-User 1: I mean he won X Games twice in 2007 and 2008. That is pretty big. And he was on the podium for slopestyle at the Olympics in 2014. But yeah, he didn't win as many medals as some other guys did. He also won a bunch of Dew Tour events. He was a very influential figure in skiing though. He helped bring a lot of new tricks into the sport and inspired a lot of people to try new things. He was always pushing himself and trying new stuff which is something that should be celebrated.
+I think he got 10th. I'm not sure though, I don't really follow skiing comps that much. But I know he was pretty hyped on his insta story after the event. He said something like "I can't believe I just competed at X Games" or something like that. So I assume he did well. I hope he gets more recognition for it too, he deserves it. He's one of my favorite skiers and has been putting out some sick content lately. I'd love to see him do a few more comps this season. Maybe even try to make it onto the US team for the Olympics next year. That would be insane! I'll have to check out the results later today when I get home from work. Good luck LJ! He got 9th. I saw it on his story but I didn’t watch the whole thing so I’m not sure who
 
---------------------------------------------------------------------------------
-#### Should Henrik focus on filming or contests? 
+------------------------------------------------------------------------------------------------------------------------
+ What are Tanner Hall's biggest accomplishments? 
 
-I think he should do both. He's a great skier and I think he has the potential to win some big contests, but at the same time his style is very unique and it would be cool to see him in more films.
-User 0: I’m not sure if you are being serious or not but I don’t think he should do either of those things. He should just ski for fun and enjoy life. If he wants to compete then that’s fine but I don’t think he needs to. He’s got a lot of years left in him and I hope he doesn’t burn himself out trying to win contests or make movies. Just my opinion though.
-User 1: I agree with this. I feel like he gets so much hate from people who want him to win contests and stuff when really he should just have fun and enjoy life. I know he's young but he's already been doing this
+I think he is the most influential skier of all time. He was a pioneer in so many ways and his style has been copied by so many people. I don’t know if there is anything else to say about him other than that. He is one of my favorite skiers of all time. His skiing is so unique, it’s like nothing you have ever seen before. It’s hard to put into words how much he has influenced me as a skier. I would say he is probably the best skier of all time. I am not sure what else to say about him. He is just an amazing skier. I love watching him ski. He is such a good skier. He is one of the greatest skiers of all time. He is one of the best skiers of all time. He is one of the best skiers of all time. He is one of the best skiers of all time. He is one of the
 
---------------------------------------------------------------------------------
-#### Skis measurements: I’ve skied for 13 years now and I’m very embarrassed but anyone want to explain ski measurements? 
+------------------------------------------------------------------------------------------------------------------------
+Should Henrik focus on filming or contests? 
 
-I'd say it depends on the type of skiing you do. If you like to carve, go with a shorter ski. If you like to jump, go with a longer ski. If you like to ride park, go with a medium length ski. But if you don't know what you like to do, then just get something that looks good to you.
-User 0: You can always adjust your stance to make up for the difference in length. For example, if you have a 205cm ski and are 170cm tall, you would stand farther back than someone who is 180cm tall and has a 205cm ski. It really doesn't matter much as long as you feel comfortable and confident in your setup.
+I think he should do both. He's a great skier and I think he has the potential to be one of the best in the world, but he also has a lot of style and creativity that could make him a really good filmer too. I think it would be cool if he did more stuff like "The Art of Skiing" with Tanner Hall. That was such an amazing movie and I think it would be cool to see what kind of movies he could come up with. But at the same time, he's still young and he needs to keep competing so he can get better and build his resume. So maybe he should just focus on comps for now and then when he gets older he can start doing more film projects. Either way, I think he's got a bright future ahead of him. He's already one of my favorite skiers and I know he'll only get better from here. He’s definitely
 
---------------------------------------------------------------------------------
-#### Epic sunset shredding with my pup: [URL]https://youtu.be/TCRIRT4gBO[/URL]A  
-   
-I'm not sure if you are asking for feedback or just posting this to show off your dog, but I think it is pretty cool that you can ride with a dog and have him follow you around. It looks like he has some good skills too! Keep up the good work.
-User 1: Thanks man, I appreciate it. He’s been riding with me since he was a puppy and now he’s almost 2 years old. He’s got a lot of energy so I try to keep him busy by taking him on adventures whenever I can. I love having him out there with me because he’s always stoked to go and he doesn’t care about anything else except what we’re doing at that moment in time. It’s awesome.
+------------------------------------------------------------------------------------------------------------------------
+Skis measurements: I’ve skied for 13 years now and I’m very embarrassed but anyone want to explain ski measurements?  
 
---------------------------------------------------------------------------------
-#### Congrats Eileen Gu!!: My girlfriend just won gold I’m so proud!!  
+I'd say you should get a pair of 180s. They are the perfect size for me, and I'm 5'9" with a 6 foot wingspan. You can always go bigger if they feel too small, but it's hard to make them smaller once you buy them. Also, don't worry about the length of your skis being too long, as long as you have enough room to swing them around in the air, you will be fine. If you find that you need more control, just put on some stiffer bindings or use a shorter ski. Good luck! **This post was edited on Jan 2nd 2022 at 4:27:22pm I would recommend getting a pair of 180cm skis. That is what I ride and I am 5'10". The longer the better when it comes to park
 
-Congratulations! That's awesome. She is a super talented skier and it's great to see her succeeding in the sport she loves.
-User 1: I was watching this live, that was insane. I hope she continues to do well in the future. I think she has a bright future ahead of her.
+------------------------------------------------------------------------------------------------------------------------
+Epic sunset shredding with my pup: [URL]https://youtu.be/TCRIRT4gBO[/URL]A  
 
---------------------------------------------------------------------------------
-#### Stolen Skis: Broke my arm yesterday and had to ski to the ski patrol hut and some fuck stole them while I was in there. Pair of J Skis Vacation mallards 180 with some tyrolia attacks on them. lmk if anyone sees them around. Was at Mt. La Crosse in WI  
+I'm not sure if you can post links to your own videos here, but I think this is a great idea! It would be cool to see more of these kinds of clips. I love the way it looks like you and your dog are just cruising down the mountain together. Keep up the good work! :)
 
-**This post was edited on Jan 2nd 2023 at 9:57:46pm Lmao, that’s a bummer man. Hope you get your skis back soon!
-User 0: You should be able to find them somewhere nearby. If not, it's probably time for new ones anyway. Good luck!
+------------------------------------------------------------------------------------------------------------------------
+Congrats Eileen Gu!!: My girlfriend just won gold I’m so proud!!  
 
---------------------------------------------------------------------------------
-#### Returned from Hell(bent): https://heritagelabskis.com/products/hb122  
+Congratulations! That's awesome. She is a super talented skier and it's great to see her succeeding in the Olympics. I hope she continues to do well in the future. Also, congratulations to all of the other athletes who are competing at the games. It's always cool to watch them compete on such a big stage.
 
-I'm not sure if this is a joke or not but I think it would be cool to see the HB122s in production. They look like they could be really fun and I'd love to try them out.
-User 0: I’ve been looking for a new pair of skis for next season, and these are definitely on my radar. Thanks for sharing!
+------------------------------------------------------------------------------------------------------------------------
+Stolen Skis: Broke my arm yesterday and had to ski to the ski patrol hut and some fuck stole them while I was in there. Pair of J Skis Vacation mallards 180 with some tyrolia attacks on them. lmk if anyone sees them around. Was at Mt. La Crosse in WI  
 
---------------------------------------------------------------------------------
-#### Jackson or targhee: I’m going to my grandmas for New Years weekend and she lives fairly close to both Jackson hole resort and grand targhee. I’ve never been to either but I’m going to go to one of them on Saturday with my brothers. Which one is a better choice for those that have been? 
-   
-We are heavy park skiers but love us some quality runs with nice side hits, drops, etc… rougher terrain. Which has a better park?  I'd say Targhee. It's a bit more spread out so you can find some hidden gems in the trees. The park is also pretty good too. But honestly, it's all about what you want to do. If you like steep skiing, then JH would be your best bet. If you like park, then Targhee. Both places are great though!
-User 0: I think Targhee is the way to go.  I haven't been there yet this season but last year was my first time and I loved it.  The park is really fun and the mountain itself is just beautiful.  There's a lot of open space between lifts which makes it easy to get around and explore.  Plus, it's not as crowded as JH.  I'm sure JH is still amazing but I feel like Targhee is a little less crowded and has a more laid
+Damn that sucks man, hope you get better soon! If you're ever up here again we can probably help ya out. Good luck! Also, what happened to your arm? Did you fall or something? Hopefully it wasn't too bad. We got a pretty sick medical team here so hopefully they were able to take care of ya. Either way, good luck! And yeah, if you need anything just let us know. We'll be happy to help ya out. Peace! -Matt (Ski Patroller) @ Mt. LaCrosse Ski Area, Wisconsin.
 
---------------------------------------------------------------------------------
-#### Kinky rail ❤️: I walk by this rail almost everyday and it’s naaaasty. Would I hit it? Yes? Would I successful slide through the whole rail? Probably not for a while, but my god i wished it snowed here so many nice rails and urban features around my campus. Fucking shame it’s in the south :/  
-   
-I'm from the south too and there are some sick rails down there. You just gotta look hard enough. Also, if you ever get to visit me at UCF, we can go skiing together!
-User 0: I live in Orlando as well. Where do you like to ski? I haven't been since I was a kid and would love to get back into it again.
-User 1: I grew up in Orlando and have never skied before. I've always wanted to though. Any recommendations on where to start? I'll be moving to Colorado soon so I want to learn before then. Thanks!
+------------------------------------------------------------------------------------------------------------------------
+Returned from Hell(bent): https://heritagelabskis.com/products/hb122  
 
---------------------------------------------------------------------------------
-#### What are mogul skiers like?: https://www.newschoolers.com/videos/watch/988376/The-Mayrand-podcast--4---Mikael-Kingsbury 
-   
-I'm not a mogul skier but I know they have to be pretty good at skiing in general and probably have some sort of athletic background. They also need to be able to handle the speed and bumps on moguls. It's definitely an art form though, so it's hard to say exactly what makes them good.
-User 0: Mogul skiers are just people who can ski fast and jump high. They don’t really have any special skills that other skiers don’t have. The only thing is that they have to be able to do it consistently enough to make it look good. If you watch the video you linked, you can see how much work goes into making it look effortless. You can tell when someone is trying too hard or if they’re just naturally talented.
+I'm not sure if you can get a refund on these, but I would definitely try to find out before you buy them. If they are the same as last year, then it is worth the risk. But if they have changed at all, then you might be screwed. Good luck! I hope you enjoy your new skis! :)
 
---------------------------------------------------------------------------------
-#### What if a Full Tilt, SPK and Apex had a baby?: 
-   
-**This thread was edited on Oct 21st 2020 at 8:21:07pm  I'm not sure what you mean by this. Are you asking for a ski that is a mix of the three brands? If so, I would say it would be a good idea to ask each brand about their plans for future skis and see if they have any similar designs planned.
-User 3: I think he means like a full tilt with spk tech and apex core. Or something like that. I’d love to see a full tilt with spk tech. That would be sick. But I don’t know how feasible it would be. Maybe someone could make a custom ski with those features though. Would be cool to see.
+------------------------------------------------------------------------------------------------------------------------
+Jackson or targhee: I’m going to my grandmas for New Years weekend and she lives fairly close to both Jackson hole resort and grand targhee. I’ve never been to either but I’m going to go to one of them on Saturday with my brothers. Which one is a better choice for those that have been? We are heavy park skiers but love us some quality runs with nice side hits, drops, etc… rougher terrain. Which has a better park?  
 
---------------------------------------------------------------------------------
-#### Is blunt hard: When I first was learning grabs with spins I went for safety because everyone says its the easiest. But I quickly found myself corking out everytime because of reaching down for the grab and I would land backseat a lot. Then I tried blunt and not only was it easier for me to spot the landing but it naturally helped bring the spin around because to look for the blunt I had to turn my head anyways. IDK I think blunt might be a good grab for people trying grabs with spins for the first time. 
-   
-I'm pretty sure you can do a blunt without a spin, so if you want to learn how to grab a blunt, just try that. It's easy to get used to grabbing a blunt, and then once you have that down you can start adding spins. If you want to learn how to grab a blunt with a spin, just practice grabbing a blunt until you feel comfortable with it, and then add in the spin when you feel ready. Good luck!
+Targhee has the best park in Idaho imo. But if you want more of a resort vibe then JH would be your bet. Targhee is pretty much just a mountain with no real town around it. JH has a lot of stuff to do besides skiing. It's also closer to Salt Lake so you can get there faster. If you like a big resort vibe with lots of amenities then JH is probably the way to go. If you want a smaller resort vibe with less crowds and more natural terrain then Targhee is the way to go. Both places have great parks though. Just depends what you're looking for. Also, if you're going to JH make sure to check out the Jackson Hole Rodeo. It's a fun time. And if you're going to Targhee make sure to hit up the Mormon Row area. 
 
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+Kinky rail ❤️: I walk by this rail almost everyday and it’s naaaasty. Would I hit it? Yes? Would I successful slide through the whole rail? Probably not for a while, but my god i wished it snowed here so many nice rails and urban features around my campus. Fucking shame it’s in the south :/  
+
+I'm sure you could get some good footage of it though! Maybe even do a little backyard setup with some pvc or something. You can always just use your imagination to make it look like you're on a kinky rail. It'll be fun! And if you don't have any friends who are into skiing then maybe you should start looking for them. They might be able to help you out with that kind of stuff. Good luck! :)
+
+------------------------------------------------------------------------------------------------------------------------
+  What are mogul skiers like?: https://www.newschoolers.com/videos/watch/988376/The-Mayrand-podcast--4---Mikael-Kingsbury  
+
+I'm not a mogul skier but I know they have to be pretty good at skiing and jumping. They also have to be able to handle the speed of going downhill in moguls, which is pretty fast. They also need to be able to handle the bumps and jumps that come with moguls. Overall, mogul skiers are pretty skilled athletes.
+
+------------------------------------------------------------------------------------------------------------------------
+  What if a Full Tilt, SPK and Apex had a baby?
+
+I'd buy them. I have no idea what they would look like but I'm sure it would be sick. I've always wanted to see a ski boot with a full tilt heel piece. It would be so cool. Imagine the durability of a full tilt heel piece combined with the lightness of an apex or spk. That would be insane. I hope someone makes this happen one day. I'll pay good money for them too. I just want something that is both durable and lightweight. I don't know how you can make a ski boot that is both but I think full tilt could do it. I'm not saying I wouldn't still use my spks because I love them but I'd definitely try out some full tilts if they were made. I'd also be down to see a full tilt toe piece in an apex or spk. I think it would be really cool. 
+
+------------------------------------------------------------------------------------------------------------------------
+Is blunt hard: When I first was learning grabs with spins I went for safety because everyone says its the easiest. But I quickly found myself corking out everytime because of reaching down for the grab and I would land backseat a lot. Then I tried blunt and not only was it easier for me to spot the landing but it naturally helped bring the spin around because to look for the blunt I had to turn my head anyways. IDK I think blunt might be a good grab for people trying grabs with spins for the first time.  
+
+I'm pretty sure you can do both at the same time, just gotta get your hand in the right position. Blunts are pretty easy to learn once you figure that out though. Safety is still a solid option if you want to keep it simple tho. Just gotta make sure you don't reach down too much or you'll end up backseating. Good luck! :)
+
+------------------------------------------------------------------------------------------------------------------------
 
 ### Citations:
 https://wandb.ai/byyoung3/ml-news/reports/Fine-Tuning-Mistral-7B-on-Python-Code-With-A-Single-GPU---Vmlldzo1NTg0NzY5
