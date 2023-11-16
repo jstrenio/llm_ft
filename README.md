@@ -1,24 +1,39 @@
-# Fine Tuning an LLM on a small consumer grade GPU using qLORA
-With the recent developments in model performance as well as memory
-efficiency in smaller more manageable models inference as well as 
-modified training methods have become possible on modest home
-computers. After the impressive release of mistral 7b I wanted to
-experiment with it locally and see if I could train a variant 
-entirely locally. This repo will serve as my hub for 
-experimentation.
+<center>
 
-### Initial Results
-I started by scraping ~8k threads and posts from the 
-newschoolers.com forums, a long established online community for
-freestyle skiers.
+# Freeski Chatbot: Local LLM Finetune on a Single Consumer GPU using QLoRA
 
-I formatted the threads into a convserational layout that aligned
-with mistral's chat-tuned model, used every memory reducing method
-I could find and hit train(). Training with only batch size of 2
-and only 150 steps (300 rows of data of the 8k) training/eval loss
-both seemed to be decreasing steadily and healthily and example 
-prompts look amazing. Improvements to the training set, playing
-with hyperparameters and more substantial training to come.
+![skier](https://i.imgur.com/K0XrhY0.jpg)
+
+</center>
+
+## Base Model Selection
+The current boom in performance of state-of-the-art large language models and subsequent research into the major contributing factors into these notable improvements has not only led to further performance gains in SOTA models, but has also led to improvements in smaller models as well. MistralAI’s newly released 7 billion parameter open-source model is one such LLM helping bridge the gap between the compute power of a single consumer computer and the performance of cutting edge models.
+
+## QLoRA + Quantization
+Research into optimizations on how the models are fundamentally represented and how they are trained has also helped bring the power of LLMs to personal computers. Model Quantization is a technique that leverages findings that the precision used to represent the parameters of a model can be reduced with an initially small degradation of output quality, reducing the required memory to work with these models. Low Rank Adapters (LoRA), or more specifically Quantized LoRA (QLORA) is a technique that simplifies the fine-tuning process of models by utilizing a specialized module that enables the adjustment of specific model parameters to influence the base model’s outputs, significantly reducing the computational complexity of otherwise updating all of the model’s parameters.
+
+## Computer Specs
+These  techniques in conjunction with a smaller model and a reasonably modern consumer-grade computer system can allow for the customization and deployment of modern LLMs without the use of a large distributed system from a major cloud provider. The following tests have been conducted on a home computer with the following specs:
+
+OS: Linux  
+CPU: 12 core 3.6 GHz Intel i7 12700k  
+RAM: 32 GB DDR5  
+GPU: 8 GB VRAM NVIDIA RTX 3070  
+
+## Scraping Technique + Dataset
+Some of the key factors mentioned above in improved model performance were found to be, to no surprise, related to training dataset quality, highlighting the importance of a well curated dataset. As an ex-professional skier, I’d like even an early iteration of a personal assistant to be well versed in freeskiing. Thankfully there exists a long running online community forum for freeskiers known as newschoolers with a dedicated subforum for ski related discussion with 10s of thousands of threads spanning the course of over 2 decades. Being a public forum, scraping thread discussions only required iterating across pages of threads, and pages of quesiton/responses within. My initial scrape pulled up to the first 10 pages of ~8,000 threads.
+
+## Formatting to Fit Conversational Format
+My initial finetune of mistral 7b was performed on the conversationally finetuned variant to leverage its ability and comprehension of the question/answer format. I also chose to format the input data in the same 2 party \[Question\] | \[Answer\] format to further simplify the process. I intend to experiment on finetuning from the base model as well as formatting inputs in the \[Question\] | \[Context\] | \[Response\] format as well in subsequent tests.
+
+## Hyperparamters + QLoRA Config + Training
+There are a number of configurations involved in the optimizations required for training on 8GB VRAM along with the traditional hyperparameters involved in training a neural net. Firstly I utilized the bitsandbytes library to quantize my model to 4bit. A model size can be determined by multiplying the number of parameters by the size of the datatype. For example, If you’re using 16bit floats (2 bytes) for 7 billion parameters, you get ~14GBs (2 bytes * 1024^3) however the required memory for calculating gradients, the optimizer and additional overhead reaches a complexity that will ultimately answer the question of will I run out of memory or not. I tried two new tools to gauge the requirements for training, LLM check quoted me at 7GB necessary VRAM while Huggingface’s Model Memory Utility Quoted me at 14GB. Unsure of whether I would OOM, I also utilized Huggingface’s Accelerator Class, which handles memory management and attempts to shard and offload segments of the model to the CPU when faced with memory limitations on the GPU. The QLoRA paper notes impressive results despite very low rank values and to again try to keep everything as small as possible, I began with an r value of 2, setting my alpha to 16 to closely align with the authors ratio between the two related values. I kept my batches small as well using a batchsize of only 2 however I utilized gradient accumulation to simulate batching with a value of 4, effectively simulating a batch size of 8. Finally I utilized the SFTTrainer() class inplace of the standard Trainer() class as its recommended specifically for finetuning using QLoRA.
+
+## Loss + Insights + Next Steps
+![loss](https://imgur.com/a/MFF9wes)
+My initial training run was focused on not running out of memory which is why I tried to follow standard hyperparameter settings to start. Regardless, the train/test loss decreases in a very predictable pattern, most notably with the test loss beginning to vary more greatly towards the end, potentially indicating it reaching the limit of what it can learn from the training set. Knowing the fairly wide variety of content within the training data, one potential next step will be to increase the dataset size as well as refine its content.
+
+## Example Outputs:
 
 ### Example Outputs:
 #### model_id 11.11.15
